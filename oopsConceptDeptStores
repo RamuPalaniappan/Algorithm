@@ -1,0 +1,169 @@
+interface IDepartmentStores
+{
+    NameOfTheStore:string;
+    NumOfBranches:number;
+    NumOfEmployee:number;
+    EmpEarnCommission():void; 
+ }  
+
+class DepartmentStores implements IDepartmentStores
+{
+   public NameOfTheStore:string;
+   public NumOfBranches:number;
+   public NumOfEmployee:number;
+   private incomeAmt:number;
+   public expenses:number;
+   public NumOfAppreciationRecieved:number;
+   private commission:number;
+   public Month1Sale:number;
+   public Month2Sale:number;
+   public Month3Sale:number;
+
+   constructor(Name:string)
+   {
+      this.NameOfTheStore=Name;
+      //this.NumOfBranches=branches;
+      //this.NumOfEmployee=emp;
+      // this.Month1Sale=M1;
+      // this.Month2Sale=M2;
+      // this.Month3Sale=M3;
+   }
+   //encapsulation
+   private QuarterlyTurnOver(Month1Sale:number,Month2Sale:number,Month3Sale:number):number
+      {  
+         var totalSaleAmt:number = Month1Sale+Month2Sale+Month3Sale;
+         this.incomeAmt = totalSaleAmt-this.expenses;
+         console.log("The total Quarterly Turn over amount for " + this.NameOfTheStore +"is" + this.incomeAmt);
+         return totalSaleAmt;
+      }
+         
+   EmpEarnCommission():void
+   {
+      console.log(this.QuarterlyTurnOver(this.Month1Sale,this.Month2Sale,this.Month3Sale));
+      if (this.NumOfAppreciationRecieved>=3)
+      {
+         console.log("The Employee earns a commission of "+ this.commission + " as a recoginition")
+      }
+   }
+}
+
+abstract class AccountSection extends DepartmentStores
+{ // inheritence single level
+   public AccManager:string;
+   public AccTeamSize:number;
+
+   constructor(StoreName:string,Mgr?:string,TSize?:number)
+   {
+      super(StoreName);
+      this.AccManager=Mgr;
+      this.AccTeamSize = TSize;
+   }
+
+   abstract ExpensesCal(EmpSal:number,StoreRent:number,Utilities:number):void;
+                  
+}
+            
+class SalesSection extends AccountSection
+{ // abstraction
+   protected MonthlySaleAmt:number;
+   public SalesMgr:string;
+   public SalesTeamSize:number;
+   public salesTarget:boolean;
+   private SalesCommission:number;
+   static count:number;
+
+   constructor(name:string,comm:number,salesTar:boolean,count=0)
+   {
+      super(name);
+      this.SalesCommission = comm;
+      this.salesTarget = salesTar;
+      count = count + 1;
+      console.log("This constructor is called " + count);
+         
+   }
+
+   ExpensesCal(EmpSal,StoreRent,Utilities):void
+   {
+      var TotalExpenses = EmpSal+StoreRent+Utilities;
+
+      if(TotalExpenses === this.expenses)
+      {
+            console.log("the expense amount matches");
+      }else{
+               console.log("Please provide more information on extra expenses");
+            }
+   }     
+
+   EmpEarnCommission():void
+   {  // overriding 
+      if (this.salesTarget == true)
+      {
+         console.log("The sales team earn a commission of "+ this.SalesCommission + " as a recoginition")
+      }
+   }
+}   
+
+//multilevel inheritence 
+class AdminSection extends DepartmentStores
+{
+   public AdminMgr:string; 
+   public AdminTeamSize:number;
+   public HasOutsourcedEmp:boolean;
+
+   constructor(name:string)
+   {
+      super(name);
+   }
+      
+   OutsourceExpense(NumOfOutsourcedEmp:number,OutsourceEmpSalary:number,commission?:number):number
+   { // overloading applied by using optional parameter
+      if(this.HasOutsourcedEmp == true)
+      {
+         var OutsourceExpAmt = NumOfOutsourcedEmp * OutsourceEmpSalary;
+         return OutsourceExpAmt;      
+      }
+   }
+}
+
+class OutSourcedTeam extends AdminSection
+{
+   public CleaningCrew:number;
+   public CateringCrew:number;
+   public TransportCrew:number;
+     
+   constructor(name:string,clean:number,cater:number,transport:number)
+   {
+   super(name);
+   this.CleaningCrew=clean;
+   this.CateringCrew=cater;
+   this.TransportCrew=transport;
+   }
+
+   OutSourceSalaryCal(numOfHoursWorked:number,SalaryPerHour:number):number
+   {
+         return numOfHoursWorked*SalaryPerHour;
+   }
+}
+
+            
+var SaravanaStores = new DepartmentStores("Saravana Stores");
+SaravanaStores.Month1Sale=1000;// after adding the Month1sale in constructor, the method works 
+SaravanaStores.Month2Sale=1000;
+SaravanaStores.Month3Sale=1000;
+SaravanaStores.expenses = 500;
+//SaravanaStores.QuarterlyTurnOver(1000,1000,1000);
+SaravanaStores.EmpEarnCommission();
+SaravanaStores.NumOfBranches=4;
+SaravanaStores.NumOfEmployee=100;
+
+var SalesSaravanaStores = new SalesSection("SaravanaStores",500,true);
+SalesSaravanaStores.ExpensesCal(10000,5000,1000);
+SalesSaravanaStores.EmpEarnCommission();
+
+var AdminSaravanaStores = new AdminSection("Saravana Stores");
+AdminSaravanaStores.HasOutsourcedEmp=true;
+var outsourceExp = AdminSaravanaStores.OutsourceExpense(10,2000);
+console.log("outsource Expenses = " + outsourceExp)
+
+var OutSourceSaravanaStores = new OutSourcedTeam("Saravana Stores",5,3,2);
+console.log(OutSourceSaravanaStores.OutSourceSalaryCal(100,30));
