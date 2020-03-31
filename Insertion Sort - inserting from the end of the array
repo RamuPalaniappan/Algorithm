@@ -1,0 +1,27 @@
+
+import java.util.Arrays;
+public class Main
+{
+	public static void main(String[] args) {
+		int [] array = {0, 1, 5, 3, 2, 7, 6, 10, 21, 5};
+		for (int i = array.length-2 ;i >= 0; i--)
+		{
+		    int toBeInserted = array[i];
+		    int j = array.length-1;
+		    while (j > i && toBeInserted < array[j])
+		    {
+		        j--;
+		    }
+		    int slidingValue = array[j];
+		    array[j] = toBeInserted;
+		    while(j > i)
+		    {
+		        int nextSlidingValue = array[j-1];
+		        array[j-1] = slidingValue;
+		        slidingValue = nextSlidingValue;
+		        j--;
+		    }
+		}
+		System.out.println (Arrays.toString (array));
+	}
+}
